@@ -1,0 +1,22 @@
+SELECT 
+    account_id AS "Account ID",
+    -- Minimum Transaction Value (IBA Minimum)
+    MIN(amount) AS "Min Transaction",
+    -- Maximum Transaction Value
+    MAX(amount) AS "Max Transaction",
+    -- Total Transaction Volume
+    SUM(amount) AS "Total Transaction",
+    -- Example Accounting Ratio: Avg Transaction Value
+    -- (Can be adjusted based on specific ratio needs)
+    ROUND(AVG(amount), 2) AS "Average Ratio"
+FROM 
+    transactions
+WHERE 
+    -- Filtering strictly for September 2022
+    transaction_date >= '2022-09-01' 
+    AND transaction_date <= '2022-09-30'
+GROUP BY 
+    account_id
+ORDER BY 
+    -- Sorted in ascending order by Minimum Transaction (IBA)
+    MIN(amount) ASC;

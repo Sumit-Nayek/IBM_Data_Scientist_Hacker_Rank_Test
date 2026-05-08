@@ -1,0 +1,160 @@
+\section*{Domain Renewal Billing Report}
+
+As part of a domain name registration service billing system, a company needs a report containing all customer accounts, the top-level domains (TLDs) they own, and the total annual renewal cost of domains scheduled to expire in the next calendar month.
+
+The current month is \textbf{July 2022}, therefore only domains expiring in \textbf{August 2022} should be included.
+
+\section*{Database Schema}
+
+\subsection*{accounts}
+
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+\textbf{column} & \textbf{type} \\
+\hline
+id & SMALLINT \\
+\hline
+username & VARCHAR(255) \\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{0.5cm}
+
+\subsection*{domains}
+
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+\textbf{column} & \textbf{type} \\
+\hline
+account\_id & SMALLINT \\
+\hline
+name & VARCHAR(255) \\
+\hline
+expiration\_date & VARCHAR(19) \\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{0.5cm}
+
+\subsection*{prices}
+
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+\textbf{column} & \textbf{type} \\
+\hline
+tld & VARCHAR(5) \\
+\hline
+price & VARCHAR(6) \\
+\hline
+\end{tabular}
+\end{center}
+
+\section*{Requirements}
+
+Generate a report containing:
+
+\begin{itemize}
+    \item \texttt{username}
+    \item One column for each TLD
+\end{itemize}
+
+Each TLD column should contain:
+
+\begin{itemize}
+    \item The total renewal cost for all domains of that TLD owned by the user
+    \item Values rounded to two decimal places in currency notation
+\end{itemize}
+
+\section*{Column Ordering}
+
+TLD columns must be ordered by:
+
+\begin{enumerate}
+    \item Descending TLD price
+    \item Ascending TLD name
+\end{enumerate}
+
+\section*{Row Ordering}
+
+Sort the result by:
+
+\begin{itemize}
+    \item \texttt{username} in ascending order
+\end{itemize}
+
+\section*{Notes}
+
+\begin{itemize}
+    \item The TLD must be extracted from the domain name.
+    \item Only domains expiring in August 2022 should be included.
+    \item Domain renewal totals are calculated as:
+\end{itemize}
+
+\[
+\text{Total Renewal Cost}
+=
+(\text{Number of Domains})
+\times
+(\text{TLD Price})
+\]
+
+\section*{Example}
+
+\subsection*{domains}
+
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{account\_id} & \textbf{name} & \textbf{expiration\_date} \\
+\hline
+1 & google.com & 2022-08-12 \\
+\hline
+1 & test.org & 2022-08-20 \\
+\hline
+2 & sample.net & 2022-07-18 \\
+\hline
+\end{tabular}
+\end{center}
+
+\vspace{0.5cm}
+
+\subsection*{prices}
+
+\begin{center}
+\begin{tabular}{|c|c|}
+\hline
+\textbf{tld} & \textbf{price} \\
+\hline
+com & 10.00 \\
+\hline
+org & 8.00 \\
+\hline
+net & 5.00 \\
+\hline
+\end{tabular}
+\end{center}
+
+\section*{Expected Output}
+
+\begin{center}
+\begin{tabular}{|c|c|c|}
+\hline
+\textbf{username} & \textbf{col1} & \textbf{col2} \\
+\hline
+alice & 10.00 & 8.00 \\
+\hline
+\end{tabular}
+\end{center}
+
+\section*{Explanation}
+
+\begin{itemize}
+    \item \texttt{google.com} contributes \$10.00
+    \item \texttt{test.org} contributes \$8.00
+    \item \texttt{sample.net} is excluded because it expires in July 2022
+\end{itemize}

@@ -1,0 +1,55 @@
+WITH filtered AS (
+    SELECT 
+        a.username,
+        SUBSTRING_INDEX(d.name, '.', -1) AS tld,
+        CAST(p.price AS DECIMAL(10,2)) AS price
+    FROM domains d
+    JOIN accounts a 
+        ON d.account_id = a.id
+    JOIN prices p 
+        ON SUBSTRING_INDEX(d.name, '.', -1) = p.tld
+    WHERE DATE_FORMAT(
+        STR_TO_DATE(d.expiration_date, '%Y-%m-%d'),
+        '%Y-%m'
+    ) = '2022-08'
+),
+
+agg AS (
+    SELECT 
+        username,
+        tld,
+        price,
+        COUNT(*) AS cnt,
+        ROUND(COUNT(*) * price, 2) AS total
+    FROM filtered
+    GROUP BY username, tld, price
+),
+
+-- assign column order based on requirement
+ordered_tlds AS (
+    SELECT 
+        tld,
+        price,
+        ROW_NUMBER() OVER (ORDER BY price DESC, tld ASC) AS col_no
+    FROM (
+        SELECT DISTINCT tld, price FROM agg
+    ) x
+)
+
+SELECT 
+    username,
+
+    MAX(CASE WHEN col_no = 1 THEN total END) AS col1,
+    MAX(CASE WHEN col_no = 2 THEN total END) AS col2,
+    MAX(CASE WHEN col_no = 3 THEN total END) AS col3,
+    MAX(CASE WHEN col_no = 4 THEN total END) AS col4,
+    MAX(CASE WHEN col_no = 5 THEN total END) AS col5,
+    MAX(CASE WHEN col_no = 6 THEN total END) AS col6,
+    MAX(CASE WHEN col_no = 7 THEN total END) AS col7
+
+FROM agg a
+JOIN ordered_tlds o 
+    ON a.tld = o.tld AND a.price = o.price
+
+GROUP BY username
+ORDER BY username;

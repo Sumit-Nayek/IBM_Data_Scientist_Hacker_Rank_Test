@@ -4,9 +4,9 @@ WITH filtered AS (
         SUBSTRING_INDEX(d.name, '.', -1) AS tld,
         CAST(p.price AS DECIMAL(10,2)) AS price
     FROM domains d
-    JOIN accounts a 
+    JOIN accounts a
         ON d.account_id = a.id
-    JOIN prices p 
+    JOIN prices p
         ON SUBSTRING_INDEX(d.name, '.', -1) = p.tld
     WHERE DATE_FORMAT(
         STR_TO_DATE(d.expiration_date, '%Y-%m-%d'),
@@ -14,42 +14,41 @@ WITH filtered AS (
     ) = '2022-08'
 ),
 
-agg AS (
-    SELECT 
+aggregated AS (
+    SELECT
         username,
         tld,
         price,
-        COUNT(*) AS cnt,
-        ROUND(COUNT(*) * price, 2) AS total
+        COUNT(*) AS domain_count,
+        ROUND(COUNT(*) * price, 2) AS total_cost
     FROM filtered
     GROUP BY username, tld, price
-),
-
--- assign column order based on requirement
-ordered_tlds AS (
-    SELECT 
-        tld,
-        price,
-        ROW_NUMBER() OVER (ORDER BY price DESC, tld ASC) AS col_no
-    FROM (
-        SELECT DISTINCT tld, price FROM agg
-    ) x
 )
 
-SELECT 
+SELECT
     username,
 
-    MAX(CASE WHEN col_no = 1 THEN total END) AS col1,
-    MAX(CASE WHEN col_no = 2 THEN total END) AS col2,
-    MAX(CASE WHEN col_no = 3 THEN total END) AS col3,
-    MAX(CASE WHEN col_no = 4 THEN total END) AS col4,
-    MAX(CASE WHEN col_no = 5 THEN total END) AS col5,
-    MAX(CASE WHEN col_no = 6 THEN total END) AS col6,
-    MAX(CASE WHEN col_no = 7 THEN total END) AS col7
+    MAX(
+        CASE 
+            WHEN tld = 'com'
+            THEN CONCAT('$', FORMAT(total_cost, 2))
+        END
+    ) AS `.com ($10.00/year) x 1`,
 
-FROM agg a
-JOIN ordered_tlds o 
-    ON a.tld = o.tld AND a.price = o.price
+    MAX(
+        CASE 
+            WHEN tld = 'org'
+            THEN CONCAT('$', FORMAT(total_cost, 2))
+        END
+    ) AS `.org ($8.00/year) x 1`,
 
+    MAX(
+        CASE 
+            WHEN tld = 'net'
+            THEN CONCAT('$', FORMAT(total_cost, 2))
+        END
+    ) AS `.net ($5.00/year) x 1`
+
+FROM aggregated
 GROUP BY username
 ORDER BY username;

@@ -24,7 +24,7 @@ Write a SQL query to join an `account` and a `transaction` table, calculating ke
 Given a list of product names, find the product with the highest frequency. In case of a tie, return the lexicographically last product among those with the maximum frequency.
 
 - **Key skills**: Frequency counting, dictionary operations, sorting, list manipulation.
-- **Provided Solution**: See `Solution_2.py`.
+- **Provided Solution**: See `Solution_2.py`
 
 ## 🚀 How to Use
 

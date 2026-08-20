@@ -1,4 +1,4 @@
-markdown
+
 # IBM Data Scientist HackerRank Test
 
 This repository contains my solutions for the **IBM Data Scientist** assessment on HackerRank. The test focused on applying SQL for data analysis and Python for algorithmic problem solving, using real world scenarios.
